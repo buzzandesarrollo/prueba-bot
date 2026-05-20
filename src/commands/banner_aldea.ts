@@ -5,20 +5,19 @@ import { hasPermission } from "../utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("asignar_aldea")
-    .setDescription("Asigna tiradas a una aldea")
+    .setName("banner_aldea")
+    .setDescription("Establece el banner de una aldea")
     .addStringOption((option) =>
       option
         .setName("aldea")
         .setDescription("Nombre de la aldea")
         .setRequired(true),
     )
-    .addIntegerOption((option) =>
+    .addStringOption((option) =>
       option
-        .setName("cantidad")
-        .setDescription("Cantidad de tiradas")
-        .setRequired(true)
-        .setMinValue(1),
+        .setName("url")
+        .setDescription("URL de la imagen del banner")
+        .setRequired(true),
     ),
 
   async execute(interaction) {
@@ -30,7 +29,7 @@ export default {
     }
 
     const villageName = interaction.options.getString("aldea", true);
-    const cantidad = interaction.options.getInteger("cantidad", true);
+    const bannerUrl = interaction.options.getString("url", true);
 
     const { data: village, error: villageError } = await supabase
       .from("villages")
@@ -47,40 +46,22 @@ export default {
 
     const { error: updateError } = await supabase
       .from("villages")
-      .update({ village_rolls: village.village_rolls + cantidad })
+      .update({ banner_url: bannerUrl })
       .eq("id", village.id);
 
     if (updateError) {
-      console.error("[AsignarAldea] Failed to update village rolls:", updateError);
+      console.error("[BannerAldea] Failed to update banner:", updateError);
       return interaction.reply({
-        content: "Error al asignar las tiradas.",
+        content: "Error al actualizar el banner.",
         ephemeral: true,
       });
     }
 
-    const { error: auditError } = await supabase.from("roll_assignments").insert({
-      assigned_by_discord_id: interaction.user.id,
-      assigned_by_username: interaction.user.username,
-      target_type: "village",
-      target_village_id: village.id,
-      source: "roll_assignment",
-      quantity: cantidad,
-    });
-
-    if (auditError) {
-      console.error("[AsignarAldea] Failed to create audit log:", auditError);
-    }
-
     const embed = new EmbedBuilder()
-      .setTitle("Tiradas Asignadas a Aldea")
+      .setTitle(`Banner actualizado: ${village.name}`)
       .setColor(0x2ecc71)
-      .setDescription(
-        `Se asignaron **${cantidad}** tiradas a la aldea **${village.name}**.`,
-      )
-      .addFields(
-        { name: "Nuevo balance", value: `${village.village_rolls + cantidad} tiradas`, inline: true },
-        { name: "Asignado por", value: interaction.user.username, inline: true },
-      )
+      .setImage(bannerUrl)
+      .setDescription(`El banner de **${village.name}** ha sido actualizado.`)
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed] });

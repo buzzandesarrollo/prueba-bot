@@ -29,22 +29,22 @@ export function weightedRandom<T extends WeightedItem>(items: T[] | null | undef
 
 export function getRarityColor(rarity: string): number {
   switch (rarity) {
-    case "common": return 0x95a5a6;
-    case "rare": return 0x3498db;
-    case "epic": return 0x9b59b6;
-    case "legendary": return 0xf1c40f;
-    case "mythic": return 0xe74c3c;
+    case "comun": return 0x95a5a6;
+    case "raro": return 0x3498db;
+    case "epico": return 0x9b59b6;
+    case "legendario": return 0xf1c40f;
+    case "mitico": return 0xe74c3c;
     default: return 0xffffff;
   }
 }
 
 export function getRarityEmoji(rarity: string): string {
   switch (rarity) {
-    case "common": return "⚪";
-    case "rare": return "🔵";
-    case "epic": return "🟣";
-    case "legendary": return "🟡";
-    case "mythic": return "🔴";
+    case "comun": return "⚪";
+    case "raro": return "🔵";
+    case "epico": return "🟣";
+    case "legendario": return "🟡";
+    case "mitico": return "🔴";
     default: return "⚪";
   }
 }

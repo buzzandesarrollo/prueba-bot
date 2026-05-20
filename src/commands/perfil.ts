@@ -57,6 +57,11 @@ export default {
       )
       .setTimestamp();
 
+    const userBanner = process.env.USER_BANNER_URL;
+    if (userBanner) {
+      embed.setImage(userBanner);
+    }
+
     if (claims && claims.length > 0) {
       const historyText = claims
         .map((c: ClaimRow) => {

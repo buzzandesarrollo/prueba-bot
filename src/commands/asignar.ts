@@ -1,25 +1,12 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { Command } from "../types/index.js";
 import { supabase } from "../services/supabase.js";
-
-function isAdmin(interaction: Parameters<Command["execute"]>[0]): boolean {
-  const adminRoleId = process.env.ADMIN_ROLE_ID;
-
-  if (!adminRoleId) {
-    return false;
-  }
-
-  if (!interaction.member || !("roles" in interaction.member)) {
-    return false;
-  }
-
-  return (interaction.member as { roles: { cache: { has: (id: string) => boolean } } }).roles.cache.has(adminRoleId);
-}
+import { hasPermission } from "../utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("asignar")
-    .setDescription("Asigna tiradas individuales a un usuario (Admin)")
+    .setDescription("Asigna tiradas individuales a un usuario")
     .addUserOption((option) =>
       option
         .setName("usuario")
@@ -35,7 +22,7 @@ export default {
     ),
 
   async execute(interaction) {
-    if (!isAdmin(interaction)) {
+    if (!await hasPermission(interaction, "can_assign_rolls")) {
       return interaction.reply({
         content: "No tienes permiso para usar este comando.",
         ephemeral: true,
@@ -73,9 +60,10 @@ export default {
 
     const { error: auditError } = await supabase.from("roll_assignments").insert({
       assigned_by_discord_id: interaction.user.id,
+      assigned_by_username: interaction.user.username,
       target_type: "user",
       target_user_id: dbUser.id,
-      source: "admin_assignment",
+      source: "roll_assignment",
       quantity: cantidad,
     });
 

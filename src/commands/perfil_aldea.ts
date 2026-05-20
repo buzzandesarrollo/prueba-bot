@@ -75,6 +75,10 @@ export default {
       )
       .setTimestamp();
 
+    if (user.villages.banner_url) {
+      embed.setImage(user.villages.banner_url);
+    }
+
     if (claims && claims.length > 0) {
       const historyText = claims
         .map((c) => {
