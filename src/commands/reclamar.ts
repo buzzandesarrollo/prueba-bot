@@ -203,7 +203,7 @@ export default {
     }
 
     const raritySummary = Object.entries(rarityCounts)
-      .map(([rarity, count]) => `${getRarityEmoji(rarity)} ${rarity}: ${count}`)
+      .map(([rarity, count]) => `${getRarityEmoji(rarity)} ${rarity.charAt(0).toUpperCase() + rarity.slice(1)}: ${count}`)
       .join("\n");
 
     const bestReward = claimedRewards.reduce((best, r) => {
@@ -211,20 +211,23 @@ export default {
       return order.indexOf(r.rarity) > order.indexOf(best.rarity) ? r : best;
     });
 
+    const prizeList = claimedRewards
+      .map((r) => `- ${getRarityEmoji(r.rarity)} ${r.name}`)
+      .join("\n");
+
     const embed = new EmbedBuilder()
-      .setTitle(`${getRarityEmoji(bestReward.rarity)} ${quantity > 1 ? `${quantity} Premios Obtenidos` : "Premio Obtenido"}`)
+      .setTitle("Felicidades! 🎉 ganaste:")
       .setColor(getRarityColor(bestReward.rarity))
+      .setDescription(prizeList.length > 4096 ? prizeList.slice(0, 4093) + "..." : prizeList)
       .addFields(
-        { name: "Fuente", value: source === "individual" ? "Personal" : "Aldea", inline: true },
+        { name: "Fuente", value: source === "individual" ? "Jugador" : "Aldea", inline: true },
         { name: "Resumen de Rarezas", value: raritySummary, inline: false },
       )
+      .setFooter({ text: "Recuerda tomar pruebas de la obtencion de este premio y adjuntalo en tu ficha." })
       .setTimestamp();
 
-    if (quantity === 1 && bestReward.image_url) {
-      embed.setDescription(`**${bestReward.name}**`).setImage(bestReward.image_url);
-    } else {
-      const names = claimedRewards.map((r) => `${getRarityEmoji(r.rarity)} ${r.name}`).join("\n");
-      embed.setDescription(names.length > 4096 ? names.slice(0, 4093) + "..." : names);
+    if (bestReward.image_url) {
+      embed.setImage(bestReward.image_url);
     }
 
     return interaction.reply({ embeds: [embed] });

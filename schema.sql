@@ -37,7 +37,7 @@ create table if not exists users (
 create table if not exists rewards (
   id uuid primary key default uuid_generate_v4(),
   name text not null,
-  rarity text not null check (rarity in ('common', 'rare', 'epic', 'legendary', 'mythic')),
+  rarity text not null check (rarity in ('comun', 'raro', 'epico', 'legendario', 'mitico')),
   weight integer not null default 1,
   image_url text,
   active boolean not null default true,
@@ -135,9 +135,9 @@ insert into villages (name, discord_role_id, village_rolls) values
 on conflict (discord_role_id) do nothing;
 
 insert into rewards (name, rarity, weight, image_url, active) values
-  ('Kunai Comun', 'common', 50, 'https://example.com/kunai.png', true),
-  ('Pergamino Raro', 'rare', 25, 'https://example.com/pergamino.png', true),
-  ('Espada Epica', 'epic', 10, 'https://example.com/espada.png', true),
-  ('Arma Legendaria', 'legendary', 3, 'https://example.com/legendaria.png', true),
-  ('Tesoro Mitico', 'mythic', 1, 'https://example.com/mitico.png', true)
+  ('Kunai Comun', 'comun', 50, 'https://example.com/kunai.png', true),
+  ('Pergamino Raro', 'raro', 25, 'https://example.com/pergamino.png', true),
+  ('Espada Epica', 'epico', 10, 'https://example.com/espada.png', true),
+  ('Arma Legendaria', 'legendario', 3, 'https://example.com/legendaria.png', true),
+  ('Tesoro Mitico', 'mitico', 1, 'https://example.com/mitico.png', true)
 on conflict do nothing;
